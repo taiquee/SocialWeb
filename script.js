@@ -1,4 +1,5 @@
 let currentUser = null;
+let pendingSignup = null;
 
 function initializeAdmin() {
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -18,7 +19,11 @@ function initializeAdmin() {
     }
 }
 
-function signup() {
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function initiateSignup() {
     const email = document.getElementById('signup-email').value;
     const username = document.getElementById('signup-username').value;
     const password = document.getElementById('signup-password').value;
@@ -35,21 +40,55 @@ function signup() {
         return;
     }
 
-    const newUser = {
-        id: 'user' + (storedUsers.length + 1),
-        name: username,
-        email: email,
-        username: username,
-        password: password,
-        bio: bio,
-        avatar: 'https://via.placeholder.com/100',
-        isAdmin: false
-    };
+    pendingSignup = { email, username, password, bio };
+    const code = generateVerificationCode();
+    localStorage.setItem('verificationCode', code);
 
-    storedUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(storedUsers));
-    alert('Cadastro realizado com sucesso! Faça login.');
-    window.location.href = 'login.html';
+    Email.send({
+        Host: "smtp.elasticemail.com",
+        Username: "taiquerz@gmail.com",
+        Password: "33805D9906D90665964ED74114979E74B227",
+        To: email,
+        From: "taiquerz@gmail.com",
+        Subject: "IFES Connect - Código de Verificação",
+        Body: `Seu código de verificação é: <b>${code}</b>`
+    }).then(
+        message => {
+            if (message === "OK") {
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('verify-form').classList.remove('hidden');
+            } else {
+                alert('Erro ao enviar o email. Tente novamente.');
+            }
+        }
+    );
+}
+
+function verifyEmail() {
+    const enteredCode = document.getElementById('verify-code').value;
+    const storedCode = localStorage.getItem('verificationCode');
+
+    if (enteredCode === storedCode) {
+        const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const newUser = {
+            id: 'user' + (storedUsers.length + 1),
+            name: pendingSignup.username,
+            email: pendingSignup.email,
+            username: pendingSignup.username,
+            password: pendingSignup.password,
+            bio: pendingSignup.bio,
+            avatar: 'https://via.placeholder.com/100',
+            isAdmin: false
+        };
+        storedUsers.push(newUser);
+        localStorage.setItem('users', JSON.stringify(storedUsers));
+        localStorage.removeItem('verificationCode');
+        pendingSignup = null;
+        alert('Cadastro realizado com sucesso! Faça login.');
+        window.location.href = 'login.html';
+    } else {
+        alert('Código inválido! Tente novamente.');
+    }
 }
 
 function login() {
@@ -75,20 +114,34 @@ function logout() {
     window.location.href = 'login.html';
 }
 
+function updateUserStatus() {
+    const statusDiv = document.getElementById('user-status');
+    if (statusDiv && currentUser) {
+        statusDiv.textContent = `Conectado como ${currentUser.username}`;
+    } else if (statusDiv) {
+        statusDiv.textContent = '';
+    }
+}
+
 function updateNavLinks() {
     const navLinks = document.getElementById('nav-links');
     if (!navLinks) return;
     const usersLink = navLinks.querySelector('a[href="users.html"]');
-    if (currentUser && currentUser.isAdmin) {
-        if (!usersLink) {
+    const profileLink = navLinks.querySelector('a[href="profile.html"]');
+    if (currentUser) {
+        if (!profileLink && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html')) {
             const li = document.createElement('li');
-            li.innerHTML = '<a href="users.html">Usuários</a>';
+            li.innerHTML = '<a href="profile.html" onclick="handleNavClick(event, \'profile.html\')">Meu Perfil</a>';
+            navLinks.insertBefore(li, navLinks.lastElementChild);
+        }
+        if (currentUser.isAdmin && !usersLink) {
+            const li = document.createElement('li');
+            li.innerHTML = '<a href="users.html" onclick="handleNavClick(event, \'users.html\')">Usuários</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
         }
     } else {
-        if (usersLink) {
-            usersLink.parentElement.remove();
-        }
+        if (usersLink) usersLink.parentElement.remove();
+        if (profileLink) profileLink.parentElement.remove();
     }
 }
 
@@ -128,7 +181,7 @@ function loadUsers() {
 }
 
 function clearAllUsers() {
-    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode be undone, exceto para o usuário Admin.')) {
+    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode ser desfeita, exceto para o usuário Admin.')) {
         return;
     }
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -194,6 +247,9 @@ function loadPosts() {
     storedPosts.forEach(post => {
         const postDiv = document.createElement('div');
         postDiv.classList.add('post');
+        if (currentUser && post.userId === currentUser.id) {
+            postDiv.classList.add('own-post');
+        }
         postDiv.innerHTML = `
             <div class="post-header">
                 <h4>${post.username}</h4>
@@ -217,6 +273,85 @@ function loadPosts() {
     });
 }
 
+function loadProfile() {
+    if (!currentUser) return;
+    document.getElementById('profile-username').value = currentUser.username;
+    document.getElementById('profile-email').value = currentUser.email;
+    document.getElementById('profile-bio').value = currentUser.bio;
+    document.getElementById('profile-picture-preview').src = currentUser.avatar;
+    document.getElementById('profile-picture').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('profile-picture-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function updateProfile() {
+    if (!currentUser) {
+        alert('Faça login para atualizar o perfil!');
+        return;
+    }
+
+    const username = document.getElementById('profile-username').value;
+    const email = document.getElementById('profile-email').value;
+    const bio = document.getElementById('profile-bio').value;
+    const password = document.getElementById('profile-password').value;
+    const avatar = document.getElementById('profile-picture-preview').src;
+
+    if (!username || !email || !bio) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = storedUsers.find(u => (u.email === email || u.username === username) && u.id !== currentUser.id);
+    if (existingUser) {
+        alert('Email ou usuário já cadastrado por outro usuário!');
+        return;
+    }
+
+    const updatedUser = {
+        ...currentUser,
+        username: username,
+        name: username,
+        email: email,
+        bio: bio,
+        avatar: avatar,
+        password: password || currentUser.password
+    };
+
+    const updatedUsers = storedUsers.map(u => u.id === currentUser.id ? updatedUser : u);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    currentUser = updatedUser;
+
+    const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const updatedPosts = storedPosts.map(p => p.userId === currentUser.id ? { ...p, username: username } : p);
+    localStorage.setItem('posts', JSON.stringify(updatedPosts));
+
+    alert('Perfil atualizado com sucesso!');
+    window.location.href = 'profile.html';
+}
+
+function handleNavClick(event, target) {
+    event.preventDefault();
+    const overlay = document.getElementById('stripe-overlay');
+    overlay.classList.add('animate');
+    setTimeout(() => {
+        if (target === 'logout') {
+            logout();
+        } else {
+            window.location.href = target;
+        }
+        overlay.classList.remove('animate');
+    }, 500);
+}
+
 function showSection(sectionId) {
     document.querySelectorAll('section').forEach(section => {
         section.classList.add('hidden');
@@ -233,10 +368,14 @@ function checkLogin() {
             welcomeMessage.textContent = `Bem-vindo, ${currentUser.name}!`;
         }
         updateNavLinks();
+        updateUserStatus();
         if (window.location.pathname.includes('users.html') && !currentUser.isAdmin) {
             window.location.href = 'index.html';
         }
-    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html')) {
+        if (window.location.pathname.includes('profile.html')) {
+            loadProfile();
+        }
+    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html') || window.location.pathname.includes('profile.html')) {
         window.location.href = 'login.html';
     }
 }
@@ -270,5 +409,7 @@ window.addEventListener('load', () => {
         }
     } else if (window.location.pathname.includes('users.html')) {
         loadUsers();
+    } else if (window.location.pathname.includes('profile.html')) {
+        loadProfile();
     }
 });

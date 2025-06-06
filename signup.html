@@ -13,7 +13,7 @@
             <img src="images/ifeslogo.png" alt="IFES Logo">
             <h1>IFES Connect</h1>
         </div>
-        <div class="auth-form">
+        <div class="auth-form" id="signup-form">
             <h2>Cadastro</h2>
             <div class="form-group">
                 <label for="signup-email">Email:</label>
@@ -31,10 +31,20 @@
                 <label for="signup-bio">Bio:</label>
                 <textarea id="signup-bio" placeholder="Fale sobre você (ex: curso e campus do IFES)"></textarea>
             </div>
-            <button onclick="signup()">Cadastrar</button>
+            <button onclick="initiateSignup()">Cadastrar</button>
             <p>Já tem conta? <a href="login.html">Faça login</a></p>
         </div>
+        <div class="auth-form hidden" id="verify-form">
+            <h2>Verificação de Email</h2>
+            <p>Um código de 6 dígitos foi enviado para seu email. Digite o código abaixo.</p>
+            <div class="form-group">
+                <label for="verify-code">Código de Verificação:</label>
+                <input type="text" id="verify-code" placeholder="Digite o código">
+            </div>
+            <button onclick="verifyEmail()">Verificar</button>
+        </div>
     </div>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

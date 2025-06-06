@@ -8,19 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div id="stripe-overlay"></div>
     <header>
         <div class="logo">
             <img src="images/ifeslogo.png" alt="IFES Logo">
             <h1>IFES Connect</h1>
         </div>
+        <div class="user-status" id="user-status"></div>
         <nav>
             <ul id="nav-links">
-                <li><a href="index.html#home">Início</a></li>
-                <li><a href="index.html#profiles">Perfis</a></li>
-                <li><a href="index.html#feed">Feed</a></li>
-                <li><a href="create-post.html">Criar Post</a></li>
-                <li><a href="users.html">Usuários</a></li>
-                <li><button onclick="logout()">Sair</button></li>
+                <li><a href="index.html#home" onclick="handleNavClick(event, 'index.html#home')">Início</a></li>
+                <li><a href="index.html#profiles" onclick="handleNavClick(event, 'index.html#profiles')">Perfis</a></li>
+                <li><a href="index.html#feed" onclick="handleNavClick(event, 'index.html#feed')">Feed</a></li>
+                <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
+                <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')">Meu Perfil</a></li>
+                <li><a href="users.html" onclick="handleNavClick(event, 'users.html')">Usuários</a></li>
+                <li><button onclick="handleNavClick(event, 'logout')">Sair</button></li>
             </ul>
         </nav>
     </header>
@@ -44,7 +47,7 @@
     </section>
 
     <footer>
-        <p>© 2025 IFES Connect. Desenvolvido com base na identidade visual do IFES.</p>
+        <p>© 2025 IFES Connect. Desenvolvido.</p>
     </footer>
 
     <script src="script.js"></script>
