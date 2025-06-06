@@ -51,7 +51,7 @@ function initiateSignup() {
             ChannelConfiguration: JSON.stringify({
                 from: 'taiquerz@gmail.com',
                 from_name: 'IFES Connect',
-                template_id: 'Seu código de verificação está aqui!',
+                template_id: 'HX90ab394352da2b6d0bcf3363095e50b5',
                 substitutions: { code: '{{code}}' }
             })
         },
