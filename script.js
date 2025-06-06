@@ -39,7 +39,7 @@ function initiateSignup() {
     pendingSignup = { email, username, password, bio };
 
     $.ajax({
-        url: 'https://verify.twilio.com/v2/Services/AC029a53eb9844d3247f3235c8716cdd40/Verifications', // YdgyY2S2VXdbtpFsyTwdTF8JIz8fAUhd Secret SK500bee186b4297ddf62b444d3be61de9 SID
+        url: 'https://verify.twilio.com/v2/Services/AC029a53eb9844d3247f3235c8716cdd40/Verifications', //  
         method: 'POST',
         headers: {
             'Authorization': 'Basic ' + btoa('AC029a53eb9844d3247f3235c8716cdd40:8c82f29e1439b29b2ef6d25460fc1dcf')
