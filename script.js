@@ -128,33 +128,93 @@ function loadUsers() {
 }
 
 function clearAllUsers() {
-    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode ser desfeita, exceto para o usuário Admin.')) {
+    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode be undone, exceto para o usuário Admin.')) {
         return;
     }
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
     const adminUser = storedUsers.find(u => u.username === 'Admin');
     localStorage.setItem('users', JSON.stringify([adminUser]));
+    localStorage.removeItem('posts');
     loadUsers();
-    alert('Todos os usuários, exceto o Admin, foram removidos.');
+    alert('Todos os usuários, exceto o Admin, e todas as postagens foram removidos.');
 }
 
-function addPost() {
+function createPost() {
     const postContent = document.getElementById('post-content').value;
     if (!postContent || !currentUser) {
         alert('Faça login e escreva uma mensagem!');
         return;
     }
 
-    const postsDiv = document.getElementById('posts');
-    const postDiv = document.createElement('div');
-    postDiv.classList.add('post');
-    postDiv.innerHTML = `
-        <h4>${currentUser.name}</h4>
-        <p>${postContent}</p>
-        <small>${new Date().toLocaleString()}</small>
-    `;
-    postsDiv.prepend(postDiv);
+    const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const newPost = {
+        id: 'post' + (storedPosts.length + 1),
+        userId: currentUser.id,
+        username: currentUser.username,
+        content: postContent,
+        timestamp: new Date().toLocaleString(),
+        comments: []
+    };
+
+    storedPosts.push(newPost);
+    localStorage.setItem('posts', JSON.stringify(storedPosts));
     document.getElementById('post-content').value = '';
+    alert('Postagem criada com sucesso!');
+    window.location.href = 'index.html#feed';
+}
+
+function addComment(postId) {
+    const commentContent = document.getElementById(`comment-content-${postId}`).value;
+    if (!commentContent || !currentUser) {
+        alert('Faça login e escreva um comentário!');
+        return;
+    }
+
+    const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const post = storedPosts.find(p => p.id === postId);
+    if (post) {
+        post.comments.push({
+            id: 'comment' + (post.comments.length + 1),
+            userId: currentUser.id,
+            username: currentUser.username,
+            content: commentContent,
+            timestamp: new Date().toLocaleString()
+        });
+        localStorage.setItem('posts', JSON.stringify(storedPosts));
+        document.getElementById(`comment-content-${postId}`).value = '';
+        loadPosts();
+    }
+}
+
+function loadPosts() {
+    const postsDiv = document.getElementById('posts');
+    if (!postsDiv) return;
+    postsDiv.innerHTML = '';
+    const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+    storedPosts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <h4>${post.username}</h4>
+                <small>${post.timestamp}</small>
+            </div>
+            <p>${post.content}</p>
+            <div class="comment-section">
+                ${post.comments.map(comment => `
+                    <div class="comment">
+                        <strong>${comment.username}</strong> - ${comment.timestamp}
+                        <p>${comment.content}</p>
+                    </div>
+                `).join('')}
+                <div class="comment-form">
+                    <textarea id="comment-content-${post.id}" placeholder="Adicione um comentário..."></textarea>
+                    <button onclick="addComment('${post.id}')">Comentar</button>
+                </div>
+            </div>
+        `;
+        postsDiv.prepend(postDiv);
+    });
 }
 
 function showSection(sectionId) {
@@ -176,7 +236,7 @@ function checkLogin() {
         if (window.location.pathname.includes('users.html') && !currentUser.isAdmin) {
             window.location.href = 'index.html';
         }
-    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html')) {
+    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html')) {
         window.location.href = 'login.html';
     }
 }
@@ -188,6 +248,7 @@ window.addEventListener('hashchange', () => {
         loadProfiles();
     } else if (hash === '#feed') {
         showSection('feed');
+        loadPosts();
     } else if (hash === '#home') {
         showSection('home');
     } else if (hash.includes('profile-')) {
@@ -200,8 +261,13 @@ window.addEventListener('load', () => {
     initializeAdmin();
     checkLogin();
     if (window.location.pathname.includes('index.html')) {
-        showSection('home');
-        loadProfiles();
+        const hash = window.location.hash || '#home';
+        showSection(hash.replace('#', ''));
+        if (hash === '#feed') {
+            loadPosts();
+        } else if (hash === '#profiles') {
+            loadProfiles();
+        }
     } else if (window.location.pathname.includes('users.html')) {
         loadUsers();
     }

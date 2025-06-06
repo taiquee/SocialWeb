@@ -80,8 +80,9 @@ h1, h2 {
 .post-form {
     margin: 1rem 0;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 1rem;
-    justify-content: center;
 }
 
 .post-form textarea {
@@ -89,6 +90,7 @@ h1, h2 {
     padding: 0.5rem;
     border: 1px solid #005555;
     border-radius: 4px;
+    resize: vertical;
 }
 
 .post-form button {
@@ -112,6 +114,38 @@ h1, h2 {
     margin: 1rem auto;
     max-width: 600px;
     text-align: left;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-header h4 {
+    margin: 0;
+}
+
+.comment-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.comment-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #005555;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    border-left: 3px solid #005555;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
 }
 
 .hidden {

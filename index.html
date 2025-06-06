@@ -18,6 +18,7 @@
                 <li><a href="#home">Início</a></li>
                 <li><a href="#profiles">Perfis</a></li>
                 <li><a href="#feed">Feed</a></li>
+                <li><a href="create-post.html">Criar Post</a></li>
                 <!-- Usuários link will be added dynamically for admin -->
                 <li><button onclick="logout()">Sair</button></li>
             </ul>
@@ -39,12 +40,8 @@
 
     <section id="feed" class="hidden">
         <h2>Feed de Postagens</h2>
-        <div class="post-form">
-            <textarea id="post-content" placeholder="No que você está pensando?"></textarea>
-            <button onclick="addPost()">Postar</button>
-        </div>
         <div id="posts">
-            <!-- Posts will be dynamically loaded here -->
+            <!-- Posts and comments will be dynamically loaded here -->
         </div>
     </section>
 
