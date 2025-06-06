@@ -42,7 +42,7 @@ function initiateSignup() {
 
     pendingSignup = { email, username, password, bio };
     const code = generateVerificationCode();
-    localStorage.setItem('verificationCode', code); // 1
+    localStorage.setItem('verificationCode', code); // B9YT56PR6XVLWKL1RLP9VY1Y
 
     Email.send({
         Host: "smtp.elasticemail.com",
