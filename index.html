@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFES Connect - Rede Social</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="images/ifeslogo.png" alt="IFES Logo">
+            <h1>IFES Connect</h1>
+        </div>
+        <nav>
+            <ul id="nav-links">
+                <li><a href="#home">Início</a></li>
+                <li><a href="#profiles">Perfis</a></li>
+                <li><a href="#feed">Feed</a></li>
+                <!-- Usuários link will be added dynamically for admin -->
+                <li><button onclick="logout()">Sair</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h2>Bem-vindo ao IFES Connect</h2>
+        <p>Uma rede social para a comunidade IFES!</p>
+        <p id="welcome-message"></p>
+    </section>
+
+    <section id="profiles" class="hidden">
+        <h2>Perfis dos Membros</h2>
+        <div class="profile-grid">
+            <!-- Profiles will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <section id="feed" class="hidden">
+        <h2>Feed de Postagens</h2>
+        <div class="post-form">
+            <textarea id="post-content" placeholder="No que você está pensando?"></textarea>
+            <button onclick="addPost()">Postar</button>
+        </div>
+        <div id="posts">
+            <!-- Posts will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 IFES Connect. Desenvolvido com base na identidade visual do IFES.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
