@@ -19,10 +19,6 @@ function initializeAdmin() {
     }
 }
 
-function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
 function initiateSignup() {
     const email = document.getElementById('signup-email').value;
     const username = document.getElementById('signup-username').value;
@@ -41,54 +37,79 @@ function initiateSignup() {
     }
 
     pendingSignup = { email, username, password, bio };
-    const code = generateVerificationCode();
-    localStorage.setItem('verificationCode', code); // B9YT56PR6XVLWKL1RLP9VY1Y TWILIO
 
-    Email.send({
-        Host: "smtp.elasticemail.com",
-        Username: "taiquerz@gmail.com",
-        Password: "33805D9906D90665964ED74114979E74B227",
-        To: email,
-        From: "taiquerz@gmail.com",
-        Subject: "IFES Connect - Código de Verificação",
-        Body: `Seu código de verificação é: <b>${code}</b>`
-    }).then(
-        message => {
-            if (message === "OK") {
+    $.ajax({
+        url: 'https://verify.twilio.com/v2/Services/AC029a53eb9844d3247f3235c8716cdd40/Verifications', // YdgyY2S2VXdbtpFsyTwdTF8JIz8fAUhd Secret SK500bee186b4297ddf62b444d3be61de9 SID
+        method: 'POST',
+        headers: {
+            'Authorization': 'Basic ' + btoa('AC029a53eb9844d3247f3235c8716cdd40:8c82f29e1439b29b2ef6d25460fc1dcf')
+        },
+        contentType: 'application/x-www-form-urlencoded',
+        data: {
+            To: email,
+            Channel: 'email',
+            ChannelConfiguration: JSON.stringify({
+                from: 'taiquerz@gmail.com',
+                from_name: 'IFES Connect',
+                template_id: 'Seu código de verificação está aqui!',
+                substitutions: { code: '{{code}}' }
+            })
+        },
+        success: function(response) {
+            if (response.status === 'pending') {
                 document.getElementById('signup-form').classList.add('hidden');
                 document.getElementById('verify-form').classList.remove('hidden');
             } else {
-                alert('Erro ao enviar o email. Tente novamente.');
+                alert('Erro ao enviar o email de verificação. Tente novamente.');
             }
+        },
+        error: function() {
+            alert('Erro ao conectar com o Twilio. Verifique as credenciais e tente novamente.');
         }
-    );
+    });
 }
 
 function verifyEmail() {
     const enteredCode = document.getElementById('verify-code').value;
-    const storedCode = localStorage.getItem('verificationCode');
+    const email = pendingSignup.email;
 
-    if (enteredCode === storedCode) {
-        const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        const newUser = {
-            id: 'user' + (storedUsers.length + 1),
-            name: pendingSignup.username,
-            email: pendingSignup.email,
-            username: pendingSignup.username,
-            password: pendingSignup.password,
-            bio: pendingSignup.bio,
-            avatar: 'https://via.placeholder.com/100',
-            isAdmin: false
-        };
-        storedUsers.push(newUser);
-        localStorage.setItem('users', JSON.stringify(storedUsers));
-        localStorage.removeItem('verificationCode');
-        pendingSignup = null;
-        alert('Cadastro realizado com sucesso! Faça login.');
-        window.location.href = 'login.html';
-    } else {
-        alert('Código inválido! Tente novamente.');
-    }
+    $.ajax({
+        url: 'https://verify.twilio.com/v2/Services/YOUR_VERIFY_SERVICE_SID/VerificationCheck',
+        method: 'POST',
+        headers: {
+            'Authorization': 'Basic ' + btoa('AC029a53eb9844d3247f3235c8716cdd40:8c82f29e1439b29b2ef6d25460fc1dcf')
+        },
+        contentType: 'application/x-www-form-urlencoded',
+        data: {
+            To: email,
+            Code: enteredCode
+        },
+        success: function(response) {
+            if (response.status === 'approved') {
+                const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                const newUser = {
+                    id: 'user' + (storedUsers.length + 1),
+                    name: pendingSignup.username,
+                    email: pendingSignup.email,
+                    username: pendingSignup.username,
+                    password: pendingSignup.password,
+                    bio: pendingSignup.bio,
+                    avatar: 'https://via.placeholder.com/100',
+                    isAdmin: false
+                };
+                storedUsers.push(newUser);
+                localStorage.setItem('users', JSON.stringify(storedUsers));
+                pendingSignup = null;
+                alert('Cadastro realizado com sucesso! Faça login.');
+                window.location.href = 'login.html';
+            } else {
+                alert('Código inválido! Tente novamente.');
+            }
+        },
+        error: function() {
+            alert('Erro ao verificar o código. Tente novamente.');
+        }
+    });
 }
 
 function login() {
