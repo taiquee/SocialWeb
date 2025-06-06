@@ -137,9 +137,12 @@ function logout() {
 function updateUserStatus() {
     const statusDiv = document.getElementById('user-status');
     if (statusDiv && currentUser) {
-        statusDiv.textContent = `Conectado como ${currentUser.username}`;
+        statusDiv.innerHTML = `
+            <img src="${currentUser.avatar}" alt="Profile Picture" class="profile-pic">
+            Conectado como ${currentUser.username}
+        `;
     } else if (statusDiv) {
-        statusDiv.textContent = '';
+        statusDiv.innerHTML = '';
     }
 }
 
@@ -163,6 +166,45 @@ function updateNavLinks() {
         if (usersLink) usersLink.parentElement.remove();
         if (profileLink) profileLink.parentElement.remove();
     }
+}
+
+function searchProfiles() {
+    const searchInput = document.getElementById('search-input').value.trim();
+    if (!searchInput.startsWith('@') || searchInput.length <= 1) {
+        alert('Digite um nome de usuário começando com @ (ex.: @usuario)');
+        return;
+    }
+
+    const query = searchInput.substring(1).toLowerCase();
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const results = storedUsers.filter(user => user.username.toLowerCase().includes(query));
+
+    localStorage.setItem('searchResults', JSON.stringify(results));
+    window.location.href = 'search.html';
+}
+
+function loadSearchResults() {
+    const resultsDiv = document.getElementById('search-results');
+    if (!resultsDiv) return;
+    resultsDiv.innerHTML = '';
+
+    const results = JSON.parse(localStorage.getItem('searchResults') || '[]');
+    if (results.length === 0) {
+        resultsDiv.innerHTML = '<p>Nenhum perfil encontrado.</p>';
+        return;
+    }
+
+    results.forEach(user => {
+        const profileCard = document.createElement('div');
+        profileCard.classList.add('profile-card');
+        profileCard.innerHTML = `
+            <img src="${user.avatar}" alt="${user.name}">
+            <h3>${user.name}</h3>
+            <p>${user.bio}</p>
+            <a href="#profile-${user.id}">Ver Perfil</a>
+        `;
+        resultsDiv.appendChild(profileCard);
+    });
 }
 
 function loadProfiles() {
@@ -395,7 +437,10 @@ function checkLogin() {
         if (window.location.pathname.includes('profile.html')) {
             loadProfile();
         }
-    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html') || window.location.pathname.includes('profile.html')) {
+        if (window.location.pathname.includes('search.html')) {
+            loadSearchResults();
+        }
+    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html') || window.location.pathname.includes('profile.html') || window.location.pathname.includes('search.html')) {
         window.location.href = 'login.html';
     }
 }
@@ -431,5 +476,7 @@ window.addEventListener('load', () => {
         loadUsers();
     } else if (window.location.pathname.includes('profile.html')) {
         loadProfile();
+    } else if (window.location.pathname.includes('search.html')) {
+        loadSearchResults();
     }
 });

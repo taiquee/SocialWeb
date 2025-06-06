@@ -3,53 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Usuários Cadastrados</title>
+    <title>IFES Connect - Usuários</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="stripe-overlay"></div>
     <header>
         <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Logo">
+            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
             <h1>IFES Connect</h1>
         </div>
-        <div class="user-status" id="user-status"></div>
         <nav>
             <ul id="nav-links">
-                <li><a href="index.html#home" onclick="handleNavClick(event, 'index.html#home')">Início</a></li>
-                <li><a href="index.html#profiles" onclick="handleNavClick(event, 'index.html#profiles')">Perfis</a></li>
-                <li><a href="index.html#feed" onclick="handleNavClick(event, 'index.html#feed')">Feed</a></li>
+                <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Início</a></li>
                 <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
-                <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')">Meu Perfil</a></li>
-                <li><a href="users.html" onclick="handleNavClick(event, 'users.html')">Usuários</a></li>
-                <li><button onclick="handleNavClick(event, 'logout')">Sair</button></li>
+                <li><a href="logout" onclick="handleNavClick(event, 'logout')">Sair</a></li>
             </ul>
         </nav>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div id="user-status"></div>
     </header>
-
-    <section id="users">
-        <h2>Usuários Cadastrados</h2>
-        <button id="clear-users-btn" class="clear-users-btn" onclick="clearAllUsers()">Limpar Todos os Usuários</button>
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>Usuário</th>
-                    <th>Email</th>
-                    <th>Bio</th>
-                    <th>Senha</th>
-                </tr>
-            </thead>
-            <tbody id="users-list">
-                <!-- User data will be dynamically loaded here -->
-            </tbody>
-        </table>
-    </section>
-
-    <footer>
-        <p>© 2025 IFES Connect. Desenvolvido.</p>
-    </footer>
-
+    <main>
+        <section>
+            <h2>Lista de Usuários (Admin)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Bio</th>
+                        <th>Senha</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list"></tbody>
+            </table>
+            <button onclick="clearAllUsers()">Limpar Todos os Usuários</button>
+        </section>
+    </main>
+    <div id="stripe-overlay"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

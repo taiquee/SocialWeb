@@ -3,63 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Meu Perfil</title>
+    <title>IFES Connect - Criar Post</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="stripe-overlay"></div>
     <header>
         <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Logo">
+            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
             <h1>IFES Connect</h1>
         </div>
-        <div class="user-status" id="user-status"></div>
         <nav>
             <ul id="nav-links">
-                <li><a href="index.html#home" onclick="handleNavClick(event, 'index.html#home')">Início</a></li>
-                <li><a href="index.html#profiles" onclick="handleNavClick(event, 'index.html#profiles')">Perfis</a></li>
-                <li><a href="index.html#feed" onclick="handleNavClick(event, 'index.html#feed')">Feed</a></li>
+                <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Início</a></li>
                 <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
-                <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')">Meu Perfil</a></li>
-                <!-- Usuários link will be added dynamically for admin -->
-                <li><button onclick="handleNavClick(event, 'logout')">Sair</button></li>
+                <li><a href="logout" onclick="handleNavClick(event, 'logout')">Sair</a></li>
             </ul>
         </nav>
-    </header>
-
-    <section id="profile">
-        <h2>Meu Perfil</h2>
-        <div class="profile-form">
-            <div class="form-group">
-                <label for="profile-picture">Foto de Perfil:</label>
-                <img id="profile-picture-preview" src="https://via.placeholder.com/100" alt="Foto de Perfil" style="width: 100px; height: 100px; border-radius: 50%;">
-                <input type="file" id="profile-picture" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label for="profile-username">Usuário:</label>
-                <input type="text" id="profile-username" placeholder="Digite seu usuário">
-            </div>
-            <div class="form-group">
-                <label for="profile-email">Email:</label>
-                <input type="email" id="profile-email" placeholder="Digite seu email">
-            </div>
-            <div class="form-group">
-                <label for="profile-bio">Bio:</label>
-                <textarea id="profile-bio" placeholder="Fale sobre você"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="profile-password">Nova Senha (opcional):</label>
-                <input type="password" id="profile-password" placeholder="Digite uma nova senha">
-            </div>
-            <button onclick="updateProfile()">Salvar Alterações</button>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
+            <i class="fas fa-search search-icon"></i>
         </div>
-    </section>
-
-    <footer>
-        <p>© 2025 IFES Connect. Desenvolvido.</p>
-    </footer>
-
+        <div id="user-status"></div>
+    </header>
+    <main>
+        <section>
+            <h2>Criar Post</h2>
+            <textarea id="post-content" placeholder="O que você quer compartilhar?"></textarea>
+            <button onclick="createPost()">Publicar</button>
+        </section>
+    </main>
+    <div id="stripe-overlay"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

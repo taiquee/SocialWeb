@@ -8,13 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="stripe-overlay"></div>
     <div class="auth-container">
         <div class="logo">
             <img src="images/ifeslogo.png" alt="IFES Logo">
             <h1>IFES Connect</h1>
         </div>
-        <div class="user-status" id="user-status"></div>
         <div class="auth-form">
             <h2>Login</h2>
             <div class="form-group">
@@ -26,9 +24,10 @@
                 <input type="password" id="login-password" placeholder="Digite sua senha">
             </div>
             <button onclick="login()">Entrar</button>
-            <p>Não tem conta? <a href="signup.html" onclick="handleNavClick(event, 'signup.html')">Cadastre-se</a></p>
+            <p>Não tem conta? <a href="signup.html">Cadastre-se</a></p>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
