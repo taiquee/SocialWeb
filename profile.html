@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Criar Post</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>IFES Connect - Meu Perfil</title>
+    <link rel="stylesheet" href="styles.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -27,10 +27,45 @@
         <div id="user-status"></div>
     </header>
     <main>
-        <section>
-            <h2>Criar Post</h2>
-            <textarea id="post-content" placeholder="O que você quer compartilhar?"></textarea>
-            <button onclick="createPost()">Publicar</button>
+        <section id="profile">
+            <h2>Meu Perfil</h2>
+            <div class="profile-header">
+                <div class="profile-picture-container">
+                    <img id="profile-picture-preview" src="https://via.placeholder.com/100" alt="Foto de Perfil">
+                </div>
+                <div class="profile-stats">
+                    <span>Posts: <strong id="post-count">0</strong></span>
+                    <span>Seguidores: <strong id="followers-count">0</strong></span>
+                    <span>Seguindo: <strong id="following-count">0</strong></span>
+                </div>
+            </div>
+            <div class="profile-form">
+                <div class="form-group">
+                    <label for="profile-picture">Alterar Foto de Perfil:</label>
+                    <input type="file" id="profile-picture" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="profile-username">Usuário (não editável):</label>
+                    <input type="text" id="profile-username" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="profile-display-name">Nome Aparente:</label>
+                    <input type="text" id="profile-display-name" placeholder="Digite seu nome visível">
+                </div>
+                <div class="form-group">
+                    <label for="profile-email">Email:</label>
+                    <input type="email" id="profile-email" placeholder="Digite seu email">
+                </div>
+                <div class="form-group">
+                    <label for="profile-bio">Bio (máx. 160 caracteres):</label>
+                    <textarea id="profile-bio" maxlength="160" placeholder="Fale sobre você"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profile-password">Nova Senha (opcional):</label>
+                    <input type="password" id="profile-password" placeholder="Digite uma nova senha">
+                </div>
+                <button onclick="updateProfile()">Salvar Alterações</button>
+            </div>
         </section>
     </main>
     <div id="stripe-overlay"></div>

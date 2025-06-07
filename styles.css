@@ -68,6 +68,11 @@ nav ul li a:hover {
     object-fit: cover;
 }
 
+#user-status strong {
+    font-weight: bold;
+    color: #00FFFF;
+}
+
 #stripe-overlay {
     position: fixed;
     top: 0;
@@ -143,19 +148,25 @@ section {
 }
 
 .comment-form button {
-    background-color: #005555;
+    background: linear-gradient(45deg, #005555, #003087);
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 .comment-form button:hover {
-    background-color: #003087;
+    background: linear-gradient(45deg, #003087, #005555);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    border: 1px solid #00FFFF;
 }
 
-.profile-grid {
+.profile-grid, .search-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
@@ -183,16 +194,50 @@ section {
 
 .profile-card p {
     color: #666;
+    margin: 5px 0;
 }
 
 .profile-card a {
     color: #003087;
     text-decoration: none;
     font-weight: bold;
+    display: block;
+    margin-top: 10px;
 }
 
 .profile-card a:hover {
     color: #00FFFF;
+}
+
+.follow-btn {
+    background: linear-gradient(45deg, #005555, #003087);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 10px 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.follow-btn:hover {
+    background: linear-gradient(45deg, #003087, #005555);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    border: 1px solid #00FFFF;
+}
+
+.follow-btn.unfollow {
+    background: linear-gradient(45deg, #ff4444, #cc0000);
+}
+
+.follow-btn.unfollow:hover {
+    background: linear-gradient(45deg, #cc0000, #ff4444);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+    border: 1px solid #ff4444;
 }
 
 table {
@@ -220,17 +265,23 @@ tr:nth-child(even) {
 }
 
 button {
-    background-color: #005555;
+    background: linear-gradient(45deg, #005555, #003087);
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #003087;
+    background: linear-gradient(45deg, #003087, #005555);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    border: 1px solid #00FFFF;
 }
 
 .auth-container {
@@ -333,9 +384,52 @@ button:hover {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
 }
 
-.search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+.profile-header {
+    display: flex;
+    align-items: center;
     gap: 20px;
-    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-picture-container {
+    flex-shrink: 0;
+}
+
+.profile-picture-container img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #00FFFF;
+}
+
+.profile-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 16px;
+    color: #005555;
+}
+
+.profile-stats span {
+    display: flex;
+    align-items: center;
+}
+
+.profile-stats strong {
+    color: black;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.profile-form .form-group input[type="file"] {
+    padding: 5px;
 }
