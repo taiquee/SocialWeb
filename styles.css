@@ -39,18 +39,26 @@ nav ul {
 }
 
 nav ul li {
-    margin-left: 20px;
+    margin-left: 10px;
 }
 
 nav ul li a {
+    background-color: #1a2a44;
     color: white;
     text-decoration: none;
+    padding: 8px 15px;
+    border: 2px solid #00FFFF;
+    border-radius: 25px;
+    font-size: 14px;
     font-weight: bold;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
+    display: inline-block;
 }
 
 nav ul li a:hover {
-    color: #00FFFF;
+    transform: scale(1.05);
+    border-color: #00FF00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
 #user-status {
@@ -70,7 +78,7 @@ nav ul li a:hover {
 
 #user-status strong {
     font-weight: bold;
-    color: #00FFFF;
+    color: black;
 }
 
 #stripe-overlay {
@@ -405,10 +413,11 @@ button:hover {
 
 .profile-stats {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    gap: 20px;
     font-size: 16px;
-    color: #005555;
+    color: black;
+    font-weight: bold;
 }
 
 .profile-stats span {

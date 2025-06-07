@@ -62,28 +62,25 @@ function initiateSignup() {
         method: 'POST',
         headers: {
             'accept': 'application/json',
-            'api-key': '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',
+            'api-key': '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',
             'content-type': 'application/json'
         },
         data: JSON.stringify({
-            sender: {
-                name: 'IFES Connect',
-                email: 'taiquerz@gmail.com'
-            },
-            to: [{
-                email: email
-            }],
+            sender: { name: 'IFES Connect', email: 'taiquerz@gmail.com' },
+            to: [{ email: email }],
             subject: 'IFES Connect - Código de Verificação',
             htmlContent: `<p>Seu código de verificação é: <b>${code}</b></p>`
         }),
         success: function(response) {
-            document.getElementById('signup-form').classList.add('hidden');
-            document.getElementById('verify-form').classList.remove('hidden');
             console.log('Email de verificação enviado:', response);
+            localStorage.setItem('pendingSignup', JSON.stringify(pendingSignup));
+            window.location.href = 'verify.html';
         },
         error: function(xhr) {
             console.error('Erro ao enviar email:', xhr.responseText);
             alert('Erro ao enviar o email de verificação. Verifique as credenciais ou tente novamente.');
+            localStorage.removeItem('verificationCode');
+            pendingSignup = null;
         }
     });
 }
@@ -91,8 +88,9 @@ function initiateSignup() {
 function verifyEmail() {
     const enteredCode = document.getElementById('verify-code').value;
     const storedCode = localStorage.getItem('verificationCode');
+    pendingSignup = JSON.parse(localStorage.getItem('pendingSignup'));
 
-    if (enteredCode === storedCode) {
+    if (enteredCode === storedCode && pendingSignup) {
         const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
         const newUser = {
             id: 'user' + (storedUsers.length + 1),
@@ -109,6 +107,7 @@ function verifyEmail() {
         storedUsers.push(newUser);
         localStorage.setItem('users', JSON.stringify(storedUsers));
         localStorage.removeItem('verificationCode');
+        localStorage.removeItem('pendingSignup');
         pendingSignup = null;
         console.log('Usuário cadastrado:', newUser);
         alert('Cadastro realizado com sucesso! Faça login.');
@@ -147,7 +146,7 @@ function updateUserStatus() {
     const statusDiv = document.getElementById('user-status');
     if (statusDiv && currentUser) {
         statusDiv.innerHTML = `
-            <img src="${currentUser.avatar}" alt="Profile Picture" class="profile-pic">
+            <img src="${currentUser.avatar}" alt="Profile Picture" class="profile-pic" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
             Conectado como <strong>${currentUser.displayName || currentUser.username}</strong>
         `;
         console.log('Status do usuário atualizado:', currentUser.displayName || currentUser.username);
@@ -162,7 +161,7 @@ function updateNavLinks() {
     const usersLink = navLinks.querySelector('a[href="users.html"]');
     const profileLink = navLinks.querySelector('a[href="profile.html"]');
     if (currentUser) {
-        if (!profileLink && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html')) {
+        if (!profileLink && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html') && !window.location.pathname.includes('verify.html')) {
             const li = document.createElement('li');
             li.innerHTML = '<a href="profile.html" onclick="handleNavClick(event, \'profile.html\')">Meu Perfil</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
@@ -170,6 +169,11 @@ function updateNavLinks() {
         if (currentUser.isAdmin && !usersLink) {
             const li = document.createElement('li');
             li.innerHTML = '<a href="users.html" onclick="handleNavClick(event, \'users.html\')">Usuários</a>';
+            navLinks.insertBefore(li, navLinks.lastElementChild);
+        }
+        if (!navLinks.querySelector('a[href="chat.html"]')) {
+            const li = document.createElement('li');
+            li.innerHTML = '<a href="chat.html" onclick="handleNavClick(event, \'chat.html\')">Chat</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
         }
     } else {
@@ -206,6 +210,9 @@ function followUser(userId) {
         currentUser = storedUsers[currentUserIndex];
         console.log(`Seguindo usuário: ${userToFollow.username}`);
         alert(`Você agora segue ${userToFollow.displayName || userToFollow.username}!`);
+        if (window.location.pathname.includes('other-profile.html')) {
+            loadOtherProfile(userId);
+        }
     } else {
         alert('Você já segue este usuário!');
     }
@@ -241,6 +248,9 @@ function unfollowUser(userId) {
     currentUser = storedUsers[currentUserIndex];
     console.log(`Deixou de seguir usuário: ${userToUnfollow.username}`);
     alert(`Você deixou de seguir ${userToUnfollow.displayName || userToUnfollow.username}!`);
+    if (window.location.pathname.includes('other-profile.html')) {
+        loadOtherProfile(userId);
+    }
 
     if (window.location.pathname.includes('search.html')) {
         loadSearchResults();
@@ -248,6 +258,24 @@ function unfollowUser(userId) {
         loadProfiles();
     } else if (window.location.pathname.includes('profile.html')) {
         loadProfile();
+    }
+}
+
+function sendMessage(userId) {
+    if (!currentUser) {
+        alert('Faça login para enviar mensagens!');
+        return;
+    }
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const recipient = storedUsers.find(u => u.id === userId);
+    if (!recipient) {
+        alert('Usuário não encontrado!');
+        return;
+    }
+    let message = prompt(`Digite sua mensagem para ${recipient.displayName || recipient.username}:`);
+    if (message) {
+        console.log(`Mensagem enviada de ${currentUser.username} para ${recipient.username}: ${message}`);
+        alert(`Mensagem enviada para ${recipient.displayName || recipient.username}: "${message}" (funcionalidade pendente de backend)`);
     }
 }
 
@@ -307,7 +335,7 @@ function loadSearchResults() {
                     ${isFollowing ? 'Deixar de Seguir' : 'Seguir'}
                 </button>
             ` : ''}
-            <a href="#profile-${user.id}">Ver Perfil</a>
+            <a href="other-profile.html?userId=${user.id}">Ver Perfil</a>
         `;
         resultsDiv.appendChild(profileCard);
         console.log('Cartão de perfil renderizado para:', user.username);
@@ -335,7 +363,7 @@ function loadProfiles() {
                     ${isFollowing ? 'Deixar de Seguir' : 'Seguir'}
                 </button>
             ` : ''}
-            <a href="#profile-${user.id}">Ver Perfil</a>
+            <a href="other-profile.html?userId=${user.id}">Ver Perfil</a>
         `;
         profileGrid.appendChild(profileCard);
     });
@@ -344,8 +372,12 @@ function loadProfiles() {
 
 function loadUsers() {
     const usersList = document.getElementById('users-list');
-    if (!usersList) return;
-    usersList.innerHTML = '';
+    if (!usersList) {
+        console.error('Div de usuários (#users-list) não encontrada!');
+        return;
+    }
+    usersList.innerHTML = '<tr><th>Usuário</th><th>Email</th><th>Bio</th><th>Senha</th></tr>';
+
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
     storedUsers.forEach(user => {
         const row = document.createElement('tr');
@@ -361,7 +393,7 @@ function loadUsers() {
 }
 
 function clearAllUsers() {
-    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode be desfeita, exceto para o usuário Admin.')) {
+    if (!confirm('Tem certeza que deseja limpar todos os usuários? Esta ação não pode ser desfeita, exceto para o usuário Admin.')) {
         return;
     }
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -430,12 +462,10 @@ function loadPosts() {
     if (!postsDiv) return;
     postsDiv.innerHTML = '';
     const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
-    storedPosts.forEach(post => {
+    const userPosts = storedPosts.filter(p => p.userId === (currentUser ? currentUser.id : ''));
+    userPosts.forEach(post => {
         const postDiv = document.createElement('div');
         postDiv.classList.add('post');
-        if (currentUser && post.userId === currentUser.id) {
-            postDiv.classList.add('own-post');
-        }
         postDiv.innerHTML = `
             <div class="post-header">
                 <h4>${post.displayName || post.username} (@${post.username})</h4>
@@ -449,15 +479,17 @@ function loadPosts() {
                         <p>${comment.content}</p>
                     </div>
                 `).join('')}
-                <div class="comment-form">
-                    <textarea id="comment-content-${post.id}" placeholder="Adicione um comentário..."></textarea>
-                    <button onclick="addComment('${post.id}')">Comentar</button>
-                </div>
+                ${currentUser && post.userId === currentUser.id ? `
+                    <div class="comment-form">
+                        <textarea id="comment-content-${post.id}" placeholder="Adicione um comentário..."></textarea>
+                        <button onclick="addComment('${post.id}')">Comentar</button>
+                    </div>
+                ` : ''}
             </div>
         `;
         postsDiv.prepend(postDiv);
     });
-    console.log('Posts carregados:', storedPosts.length);
+    console.log('Posts carregados:', userPosts.length);
 }
 
 function loadProfile() {
@@ -500,6 +532,52 @@ function loadProfile() {
     } else {
         console.error('Input de foto de perfil não encontrado!');
     }
+}
+
+function loadOtherProfile(userId) {
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = storedUsers.find(u => u.id === userId);
+    if (!user) {
+        console.error('Usuário não encontrado:', userId);
+        return;
+    }
+
+    const isFollowing = currentUser && currentUser.following.includes(user.id);
+    document.getElementById('profile-picture-preview').src = user.avatar || 'https://via.placeholder.com/100';
+    document.getElementById('profile-title').textContent = user.displayName || user.username;
+    document.getElementById('profile-username').textContent = user.displayName || user.username;
+    document.getElementById('profile-bio').textContent = user.bio || 'Nenhuma bio disponível';
+    document.getElementById('post-count').textContent = JSON.parse(localStorage.getItem('posts') || '[]').filter(p => p.userId === user.id).length;
+    document.getElementById('followers-count').textContent = user.followers.length;
+    document.getElementById('following-count').textContent = user.following.length;
+    document.getElementById('follow-btn').textContent = isFollowing ? 'Deixar de Seguir' : 'Seguir';
+    document.getElementById('follow-btn').onclick = () => (isFollowing ? unfollowUser(userId) : followUser(userId));
+    document.getElementById('message-btn').onclick = () => sendMessage(userId);
+
+    const postsDiv = document.getElementById('posts');
+    postsDiv.innerHTML = '';
+    const userPosts = JSON.parse(localStorage.getItem('posts') || '[]').filter(p => p.userId === user.id);
+    userPosts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <h4>${post.displayName || post.username} (@${post.username})</h4>
+                <small>${post.timestamp}</small>
+            </div>
+            <p>${post.content}</p>
+            <div class="comment-section">
+                ${post.comments.map(comment => `
+                    <div class="comment">
+                        <strong>${comment.displayName || comment.username} (@${comment.username})</strong> - ${comment.timestamp}
+                        <p>${comment.content}</p>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        postsDiv.prepend(postDiv);
+    });
+    console.log('Perfil de outro usuário carregado:', user.username);
 }
 
 function updateProfile() {
@@ -601,7 +679,12 @@ function checkLogin() {
         if (window.location.pathname.includes('search.html')) {
             loadSearchResults();
         }
-    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html') || window.location.pathname.includes('profile.html') || window.location.pathname.includes('search.html')) {
+        if (window.location.pathname.includes('other-profile.html')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            if (userId) loadOtherProfile(userId);
+        }
+    } else if (window.location.pathname.includes('index.html') || window.location.pathname.includes('users.html') || window.location.pathname.includes('create-post.html') || window.location.pathname.includes('profile.html') || window.location.pathname.includes('search.html') || window.location.pathname.includes('other-profile.html')) {
         window.location.href = 'login.html';
     }
     console.log('Verificação de login concluída. Usuário atual:', currentUser ? currentUser.username : 'Nenhum');
@@ -640,6 +723,13 @@ window.addEventListener('load', () => {
         loadProfile();
     } else if (window.location.pathname.includes('search.html')) {
         loadSearchResults();
+    } else if (window.location.pathname.includes('other-profile.html')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        if (userId) loadOtherProfile(userId);
+    } else if (window.location.pathname.includes('verify.html')) {
+        // Não carrega nada adicional em verify.html
     }
+    updateUserStatus(); // Garante que o status seja atualizado
     console.log('Página carregada:', window.location.pathname);
 });

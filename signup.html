@@ -4,46 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFES Connect - Cadastro</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="auth-container">
+    <header>
         <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Logo">
+            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
             <h1>IFES Connect</h1>
         </div>
-        <div class="auth-form" id="signup-form">
+        <nav>
+            <ul id="nav-links">
+                <li><a href="login.html" onclick="handleNavClick(event, 'login.html')">Login</a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div id="user-status"></div>
+    </header>
+    <main>
+        <div class="auth-container">
             <h2>Cadastro</h2>
-            <div class="form-group">
-                <label for="signup-email">Email:</label>
-                <input type="email" id="signup-email" placeholder="Digite seu email">
-            </div>
-            <div class="form-group">
-                <label for="signup-username">Usuário:</label>
-                <input type="text" id="signup-username" placeholder="Escolha um usuário">
-            </div>
-            <div class="form-group">
-                <label for="signup-password">Senha:</label>
-                <input type="password" id="signup-password" placeholder="Escolha uma senha">
-            </div>
-            <div class="form-group">
-                <label for="signup-bio">Bio:</label>
-                <textarea id="signup-bio" placeholder="Fale sobre você (ex: curso e campus do IFES)"></textarea>
-            </div>
-            <button onclick="initiateSignup()">Cadastrar</button>
-            <p>Já tem conta? <a href="login.html">Faça login</a></p>
+            <form id="signup-form" class="auth-form">
+                <div class="form-group">
+                    <label for="signup-email">Email:</label>
+                    <input type="email" id="signup-email" placeholder="Digite seu email">
+                </div>
+                <div class="form-group">
+                    <label for="signup-username">Usuário:</label>
+                    <input type="text" id="signup-username" placeholder="Escolha um usuário">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Senha:</label>
+                    <input type="password" id="signup-password" placeholder="Escolha uma senha">
+                </div>
+                <div class="form-group">
+                    <label for="signup-bio">Bio:</label>
+                    <textarea id="signup-bio" maxlength="160" placeholder="Fale sobre você (ex.: curso e campus do IFES)"></textarea>
+                </div>
+                <button type="button" onclick="initiateSignup()">CADASTRAR</button>
+                <p>Já tem conta? <a href="login.html">Faça login</a></p>
+            </form>
         </div>
-        <div class="auth-form hidden" id="verify-form">
-            <h2>Verificação de Email</h2>
-            <p>Um código de 6 dígitos foi enviado para seu email. Digite o código abaixo.</p>
-            <div class="form-group">
-                <label for="verify-code">Código de Verificação:</label>
-                <input type="text" id="verify-code" placeholder="Digite o código">
-            </div>
-            <button onclick="verifyEmail()">Verificar</button>
-        </div>
-    </div>
+    </main>
+    <div id="stripe-overlay"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </body>

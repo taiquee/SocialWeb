@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFES Connect - Usuários</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -17,31 +17,30 @@
             <ul id="nav-links">
                 <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Início</a></li>
                 <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
-                <li><a href="logout" onclick="handleNavClick(event, 'logout')">Sair</a></li>
+                <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')">Meu Perfil</a></li>
+                <li><a href="users.html" onclick="handleNavClick(event, 'users.html')">Usuários</a></li>
+                <li><a href="#" onclick="handleNavClick(event, 'logout')">Sair</a></li>
             </ul>
         </nav>
         <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
             <i class="fas fa-search search-icon"></i>
         </div>
         <div id="user-status"></div>
     </header>
     <main>
-        <section>
+        <div class="auth-container" id="users-container">
             <h2>Lista de Usuários (Admin)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Usuário</th>
-                        <th>Email</th>
-                        <th>Bio</th>
-                        <th>Senha</th>
-                    </tr>
-                </thead>
-                <tbody id="users-list"></tbody>
+            <table id="users-list">
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Bio</th>
+                    <th>Senha</th>
+                </tr>
             </table>
-            <button onclick="clearAllUsers()">Limpar Todos os Usuários</button>
-        </section>
+            <button onclick="clearAllUsers()" class="follow-btn">LIMPAR TODOS OS USUÁRIOS</button>
+        </div>
     </main>
     <div id="stripe-overlay"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

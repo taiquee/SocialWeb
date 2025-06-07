@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+   <html lang="pt-BR">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>IFES Connect - Chat Privado</title>
+       <link rel="stylesheet" href="styles.css?v=3">
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+       <style>
+           body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
+           #chat-container { max-width: 800px; margin: 0 auto; display: flex; }
+           #users, #chat { flex: 1; background: white; padding: 10px; border-radius: 5px; }
+           #users { margin-right: 10px; }
+           #chat-messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+           #message-input { width: 70%; padding: 5px; }
+           #send-btn { padding: 5px 10px; background-color: #005555; color: white; border: none; border-radius: 5px; cursor: pointer; }
+           #send-btn:hover { background-color: #003087; }
+           .typing { display: inline-block; }
+           .typing-dot { display: inline-block; width: 6px; height: 6px; background: #333; border-radius: 50%; margin: 0 2px; animation: typing 1.2s infinite; }
+           .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+           .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+           @keyframes typing {
+               0% { opacity: 0.3; }
+               50% { opacity: 1; }
+               100% { opacity: 0.3; }
+           }
+           .message { margin: 5px 0; padding: 5px; border-radius: 3px; }
+           .sent { background: #e0f7fa; text-align: right; }
+           .received { background: #fff3e0; text-align: left; }
+       </style>
+   </head>
+   <body>
+       <header>
+           <div class="logo">
+               <img src="images/ifeslogo.png" alt="IFES Connect Logo">
+               <h1>IFES Connect</h1>
+           </div>
+           <nav>
+               <ul id="nav-links">
+                   <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Home</a></li>
+                   <li><a href="login.html" onclick="handleNavClick(event, 'login.html')">Login</a></li>
+               </ul>
+           </nav>
+           <div class="search-container">
+               <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
+               <i class="fas fa-search search-icon"></i>
+           </div>
+           <div id="user-status"></div>
+       </header>
+       <main>
+           <div id="chat-container">
+               <div id="users">
+                   <h3>Usuários Online</h3>
+                   <ul id="user-list"></ul>
+               </div>
+               <div id="chat">
+                   <h3>Chat Privado</h3>
+                   <div id="chat-messages"></div>
+                   <input type="text" id="message-input" placeholder="Digite sua mensagem...">
+                   <button id="send-btn">Enviar</button>
+                   <div id="typing-indicator" class="typing" style="display: none;">
+                       <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+                   </div>
+               </div>
+           </div>
+       </main>
+       <div id="stripe-overlay"></div>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+       <script src="chat-script.js"></script>
+       <script src="script.js"></script> <!-- Inclui a lógica existente -->
+   </body>
+   </html>
