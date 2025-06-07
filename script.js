@@ -62,13 +62,13 @@ function initiateSignup() {
         method: 'POST',
         headers: {
             'accept': 'application/json',
-            'api-key': 'YOUR_BREVO_API_KEY',
+            'api-key': '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',
             'content-type': 'application/json'
         },
         data: JSON.stringify({
             sender: {
                 name: 'IFES Connect',
-                email: 'your-verified-email@domain.com'
+                email: 'taiquerz@gmail.com'
             },
             to: [{
                 email: email
