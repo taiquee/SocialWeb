@@ -62,7 +62,7 @@ function initiateSignup() {
         method: 'POST',
         headers: {
             'accept': 'application/json',
-            'api-key': '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',
+            'api-key': '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',
             'content-type': 'application/json'
         },
         data: JSON.stringify({
