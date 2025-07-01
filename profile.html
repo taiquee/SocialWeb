@@ -4,72 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFES Connect - Meu Perfil</title>
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
-            <h1>IFES Connect</h1>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-bars" id="menu-toggle"></i>
+            <img src="images/connectalogo.png" alt="Connecta Logo" class="sidebar-logo">
         </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Início</a></li>
-                <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
-                <li><a href="logout" onclick="handleNavClick(event, 'logout')">Sair</a></li>
-            </ul>
-        </nav>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <div id="user-status"></div>
-    </header>
-    <main>
-        <section id="profile">
-            <h2>Meu Perfil</h2>
-            <div class="profile-header">
-                <div class="profile-picture-container">
-                    <img id="profile-picture-preview" src="https://via.placeholder.com/100" alt="Foto de Perfil">
+        <ul id="nav-links">
+            <li><a href="index.html" onclick="handleNavClick(event, 'index.html')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')"><i class="fas fa-plus"></i> Criar Post</a></li>
+            <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li><a href="users.html" onclick="handleNavClick(event, 'users.html')"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="chat.html" onclick="handleNavClick(event, 'chat.html')"><i class="fas fa-comment"></i> Chat</a></li>
+            <li><a href="#" onclick="handleNavClick(event, 'logout')"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header>
+            <div class="logo-container">
+                <img src="images/connectalogo.png" alt="Connecta Logo">
+                <span>Connecta</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="user-status"></div>
+        </header>
+        <main>
+            <div class="auth-container" id="profile-container">
+                <h2>Meu Perfil</h2>
+                <div class="profile-header">
+                    <img src="" alt="Foto de Perfil" id="profile-pic-display" class="user-avatar">
+                    <h3 id="username-display"></h3>
+                    <div class="stats-container">
+                        <p class="stat-item"><strong>Posts:</strong> <span id="posts-count">0</span></p>
+                        <p class="stat-item"><strong>Seguidores:</strong> <span id="followers-count">0</span></p>
+                        <p class="stat-item"><strong>Seguindo:</strong> <span id="following-count">0</span></p>
+                    </div>
                 </div>
-                <div class="profile-stats">
-                    <span><strong>Posts</strong>: <strong id="post-count">0</strong></span>
-                    <span><strong>Seguidores</strong>: <strong id="followers-count">0</strong></span>
-                    <span><strong>Seguindo</strong>: <strong id="following-count">0</strong></span>
+                <div class="profile-details">
+                    <p><strong>Foto de Perfil:</strong> <input type="file" id="profile-pic" accept="image/*"> <button class="profile-btn" onclick="document.getElementById('profile-pic').click()">Escolher Arquivo</button></p>
+                    <p><strong>Usuário:</strong> <input type="text" id="username" placeholder="Digite seu nome visível"></p>
+                    <p><strong>Email:</strong> <input type="email" id="email" placeholder="Digite seu email"></p>
+                    <p><strong>Fale sobre você:</strong> <textarea id="bio" placeholder="Digite uma descrição"></textarea></p>
+                    <p><strong>Nova Senha (opcional):</strong> <input type="password" id="new-password" placeholder="Digite uma nova senha"></p>
+                    <button class="save-btn" onclick="saveProfileChanges()">Salvar Alterações</button>
                 </div>
             </div>
-            <div class="profile-form">
-                <div class="form-group">
-                    <label for="profile-picture">Alterar Foto de Perfil:</label>
-                    <input type="file" id="profile-picture" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <label for="profile-username">Usuário (não editável):</label>
-                    <input type="text" id="profile-username" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="profile-display-name">Nome Aparente:</label>
-                    <input type="text" id="profile-display-name" placeholder="Digite seu nome visível">
-                </div>
-                <div class="form-group">
-                    <label for="profile-email">Email:</label>
-                    <input type="email" id="profile-email" placeholder="Digite seu email">
-                </div>
-                <div class="form-group">
-                    <label for="profile-bio">Bio (máx. 160 caracteres):</label>
-                    <textarea id="profile-bio" maxlength="160" placeholder="Fale sobre você"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="profile-password">Nova Senha (opcional):</label>
-                    <input type="password" id="profile-password" placeholder="Digite uma nova senha">
-                </div>
-                <button onclick="updateProfile()">Salvar Alterações</button>
-            </div>
-        </section>
-    </main>
-    <div id="stripe-overlay"></div>
+        </main>
+        <div id="stripe-overlay"></div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        function saveProfileChanges() {
+            const username = $('#username').val();
+            const email = $('#email').val();
+            const bio = $('#bio').val();
+            const newPassword = $('#new-password').val();
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            currentUser.username = username || currentUser.username;
+            currentUser.email = email || currentUser.email;
+            currentUser.bio = bio || currentUser.bio;
+            if (newPassword) currentUser.password = newPassword;
+
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            loadProfileData();
+            alert('Perfil atualizado com sucesso!');
+        }
+
+        function loadProfileData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            $('#username-display').text(currentUser.username || 'Usuário');
+            $('#profile-pic-display').attr('src', currentUser.avatar || 'https://via.placeholder.com/100');
+            $('#username').val(currentUser.username || '');
+            $('#email').val(currentUser.email || '');
+            $('#bio').val(currentUser.bio || '');
+            $('#posts-count').text(currentUser.posts || 0);
+            $('#followers-count').text(currentUser.followers || 0);
+            $('#following-count').text(currentUser.following || 0);
+        }
+
+        window.addEventListener('load', loadProfileData);
+    </script>
 </body>
 </html>

@@ -3,29 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Login</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Connecta - Login</title>
+    <link rel="stylesheet" href="styles.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="auth-container">
-        <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Logo">
-            <h1>IFES Connect</h1>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-bars" id="menu-toggle"></i>
+            <img src="images/connectalogo.png" alt="Connecta Logo" class="sidebar-logo">
         </div>
-        <div class="auth-form">
-            <h2>Login</h2>
-            <div class="form-group">
-                <label for="login-email">Email ou Usuário:</label>
-                <input type="text" id="login-email" placeholder="Digite seu email ou usuário">
+        <ul id="nav-links">
+            <li><a href="index.html" onclick="handleNavClick(event, 'index.html')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')"><i class="fas fa-plus"></i> Criar Post</a></li>
+            <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li><a href="users.html" onclick="handleNavClick(event, 'users.html')"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="chat.html" onclick="handleNavClick(event, 'chat.html')"><i class="fas fa-comment"></i> Chat</a></li>
+            <li><a href="#" onclick="handleNavClick(event, 'logout')"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header>
+            <div class="logo-container">
+                <img src="images/connectalogo.png" alt="Connecta Logo">
+                <span>Connecta</span>
             </div>
-            <div class="form-group">
-                <label for="login-password">Senha:</label>
-                <input type="password" id="login-password" placeholder="Digite sua senha">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
+                <i class="fas fa-search search-icon"></i>
             </div>
-            <button onclick="login()">Entrar</button>
-            <p>Não tem conta? <a href="signup.html">Cadastre-se</a></p>
-        </div>
+            <div id="user-status"></div>
+        </header>
+        <main>
+            <div class="auth-container">
+                <h2>Login - Connecta</h2>
+                <input type="text" id="login-email" placeholder="Email ou Usuário">
+                <input type="password" id="login-password" placeholder="Senha">
+                <button onclick="login()">Entrar</button>
+                <p>Não tem conta? <a href="signup.html">Cadastre-se</a></p>
+            </div>
+        </main>
+        <div id="stripe-overlay"></div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>

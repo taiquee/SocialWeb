@@ -1,72 +1,118 @@
 <!DOCTYPE html>
-   <html lang="pt-BR">
-   <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>IFES Connect - Chat Privado</title>
-       <link rel="stylesheet" href="styles.css?v=3">
-       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-       <style>
-           body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
-           #chat-container { max-width: 800px; margin: 0 auto; display: flex; }
-           #users, #chat { flex: 1; background: white; padding: 10px; border-radius: 5px; }
-           #users { margin-right: 10px; }
-           #chat-messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
-           #message-input { width: 70%; padding: 5px; }
-           #send-btn { padding: 5px 10px; background-color: #005555; color: white; border: none; border-radius: 5px; cursor: pointer; }
-           #send-btn:hover { background-color: #003087; }
-           .typing { display: inline-block; }
-           .typing-dot { display: inline-block; width: 6px; height: 6px; background: #333; border-radius: 50%; margin: 0 2px; animation: typing 1.2s infinite; }
-           .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-           .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-           @keyframes typing {
-               0% { opacity: 0.3; }
-               50% { opacity: 1; }
-               100% { opacity: 0.3; }
-           }
-           .message { margin: 5px 0; padding: 5px; border-radius: 3px; }
-           .sent { background: #e0f7fa; text-align: right; }
-           .received { background: #fff3e0; text-align: left; }
-       </style>
-   </head>
-   <body>
-       <header>
-           <div class="logo">
-               <img src="images/ifeslogo.png" alt="IFES Connect Logo">
-               <h1>IFES Connect</h1>
-           </div>
-           <nav>
-               <ul id="nav-links">
-                   <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Home</a></li>
-                   <li><a href="login.html" onclick="handleNavClick(event, 'login.html')">Login</a></li>
-               </ul>
-           </nav>
-           <div class="search-container">
-               <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
-               <i class="fas fa-search search-icon"></i>
-           </div>
-           <div id="user-status"></div>
-       </header>
-       <main>
-           <div id="chat-container">
-               <div id="users">
-                   <h3>Usuários Online</h3>
-                   <ul id="user-list"></ul>
-               </div>
-               <div id="chat">
-                   <h3>Chat Privado</h3>
-                   <div id="chat-messages"></div>
-                   <input type="text" id="message-input" placeholder="Digite sua mensagem...">
-                   <button id="send-btn">Enviar</button>
-                   <div id="typing-indicator" class="typing" style="display: none;">
-                       <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
-                   </div>
-               </div>
-           </div>
-       </main>
-       <div id="stripe-overlay"></div>
-       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-       <script src="chat-script.js"></script>
-       <script src="script.js"></script> <!-- Inclui a lógica existente -->
-   </body>
-   </html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecta - Chat</title>
+    <link rel="stylesheet" href="styles.css?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-bars" id="menu-toggle"></i>
+            <img src="images/connectalogo.png" alt="Connecta Logo" class="sidebar-logo">
+        </div>
+        <ul id="nav-links">
+            <li><a href="index.html" onclick="handleNavClick(event, 'index.html')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')"><i class="fas fa-plus"></i> Criar Post</a></li>
+            <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li><a href="users.html" onclick="handleNavClick(event, 'users.html')"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="chat.html" onclick="handleNavClick(event, 'chat.html')"><i class="fas fa-comment"></i> Chat</a></li>
+            <li><a href="#" onclick="handleNavClick(event, 'logout')"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header>
+            <div class="logo-container">
+                <img src="images/connectalogo.png" alt="Connecta Logo">
+                <span>Connecta</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="user-status"></div>
+        </header>
+        <main>
+            <div id="chat-container">
+                <div id="users">
+                    <h2>Usuários Online</h2>
+                    <div id="users-list" class="profile-grid">
+                        <!-- Usuários serão carregados dinamicamente -->
+                    </div>
+                </div>
+                <div id="chat" class="hidden">
+                    <div id="chat-header" class="chat-header">
+                        <img src="" alt="Profile Picture" class="user-avatar" id="chat-user-avatar">
+                        <span id="chat-user-name"></span>
+                    </div>
+                    <div id="chat-messages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="message-input" placeholder="Digite uma mensagem...">
+                        <button id="send-btn">Enviar</button>
+                    </div>
+                    <div class="typing" id="typing-indicator"></div>
+                </div>
+            </div>
+        </main>
+        <div id="stripe-overlay"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('send-btn').addEventListener('click', () => {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message && currentUser) {
+                const chatMessages = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'sent');
+                messageDiv.textContent = message;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                messageInput.value = '';
+                console.log('Mensagem enviada:', message);
+            } else {
+                alert('Faça login e digite uma mensagem!');
+            }
+        });
+
+        window.addEventListener('load', () => {
+            const usersList = document.getElementById('users-list');
+            const chat = document.getElementById('chat');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatHeader = document.getElementById('chat-header');
+            const chatUserAvatar = document.getElementById('chat-user-avatar');
+            const chatUserName = document.getElementById('chat-user-name');
+
+            const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            storedUsers.forEach(user => {
+                if (user.id !== currentUser?.id) {
+                    const userCard = document.createElement('div');
+                    userCard.classList.add('profile-card');
+                    userCard.innerHTML = `
+                        <img src="${user.avatar}" alt="${user.username}" class="user-avatar">
+                        <h3>${user.displayName || user.username}</h3>
+                        <p>@${user.username}</p>
+                        <button class="follow-btn" onclick="openChat('${user.id}', '${user.avatar}', '${user.displayName || user.username}')">Enviar Mensagem</button>
+                    `;
+                    usersList.appendChild(userCard);
+                }
+            });
+
+            window.openChat = (userId, avatar, name) => {
+                const selectedUser = storedUsers.find(u => u.id === userId);
+                if (selectedUser) {
+                    chatUserAvatar.src = avatar;
+                    chatUserName.textContent = name;
+                    chat.classList.remove('hidden');
+                    chat.classList.add('active');
+                    chatMessages.innerHTML = ''; // Limpa mensagens anteriores
+                    console.log(`Chat aberto com: ${name}`);
+                }
+            };
+        });
+    </script>
+</body>
+</html>

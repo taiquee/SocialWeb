@@ -8,9 +8,9 @@ function initializeAdmin() {
             id: 'user0',
             username: 'Admin',
             displayName: 'Administrador',
-            email: 'admin@ifesconnect.com',
+            email: 'admin@connecta.com',
             password: 'taiquematheus',
-            bio: 'Administrador do IFES Connect',
+            bio: 'Administrador do Connecta',
             avatar: 'https://via.placeholder.com/100',
             isAdmin: true,
             followers: [],
@@ -62,13 +62,13 @@ function initiateSignup() {
         method: 'POST',
         headers: {
             'accept': 'application/json',
-            'api-key': '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',
+            'api-key': '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',
             'content-type': 'application/json'
         },
         data: JSON.stringify({
-            sender: { name: 'IFES Connect', email: 'taiquerz@gmail.com' },
+            sender: { name: 'Connecta', email: 'taiquerz@gmail.com' },
             to: [{ email: email }],
-            subject: 'IFES Connect - Código de Verificação',
+            subject: 'Connecta - Código de Verificação',
             htmlContent: `<p>Seu código de verificação é: <b>${code}</b></p>`
         }),
         success: function(response) {
@@ -146,7 +146,7 @@ function updateUserStatus() {
     const statusDiv = document.getElementById('user-status');
     if (statusDiv && currentUser) {
         statusDiv.innerHTML = `
-            <img src="${currentUser.avatar}" alt="Profile Picture" class="profile-pic" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle; margin-right: 5px;">
+            <img src="${currentUser.avatar}" alt="Profile Picture" class="profile-pic">
             Conectado como <strong>${currentUser.displayName || currentUser.username}</strong>
         `;
         console.log('Status do usuário atualizado:', currentUser.displayName || currentUser.username);
@@ -159,26 +159,24 @@ function updateNavLinks() {
     const navLinks = document.getElementById('nav-links');
     if (!navLinks) return;
     const usersLink = navLinks.querySelector('a[href="users.html"]');
-    const profileLink = navLinks.querySelector('a[href="profile.html"]');
     if (currentUser) {
-        if (!profileLink && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html') && !window.location.pathname.includes('verify.html')) {
+        if (!usersLink && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html') && !window.location.pathname.includes('verify.html')) {
             const li = document.createElement('li');
-            li.innerHTML = '<a href="profile.html" onclick="handleNavClick(event, \'profile.html\')">Meu Perfil</a>';
+            li.innerHTML = '<a href="profile.html" onclick="handleNavClick(event, \'profile.html\')"><i class="fas fa-user"></i> Meu Perfil</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
         }
         if (currentUser.isAdmin && !usersLink) {
             const li = document.createElement('li');
-            li.innerHTML = '<a href="users.html" onclick="handleNavClick(event, \'users.html\')">Usuários</a>';
+            li.innerHTML = '<a href="users.html" onclick="handleNavClick(event, \'users.html\')"><i class="fas fa-users"></i> Usuários</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
         }
         if (!navLinks.querySelector('a[href="chat.html"]')) {
             const li = document.createElement('li');
-            li.innerHTML = '<a href="chat.html" onclick="handleNavClick(event, \'chat.html\')">Chat</a>';
+            li.innerHTML = '<a href="chat.html" onclick="handleNavClick(event, \'chat.html\')"><i class="fas fa-comment"></i> Chat</a>';
             navLinks.insertBefore(li, navLinks.lastElementChild);
         }
     } else {
         if (usersLink) usersLink.parentElement.remove();
-        if (profileLink) profileLink.parentElement.remove();
     }
     console.log('Links de navegação atualizados');
 }
@@ -496,20 +494,22 @@ function loadProfile() {
     if (!currentUser) return;
 
     console.log('Carregando perfil:', currentUser);
-    document.getElementById('profile-username').value = currentUser.username;
-    document.getElementById('profile-display-name').value = currentUser.displayName || currentUser.username;
-    document.getElementById('profile-email').value = currentUser.email;
-    document.getElementById('profile-bio').value = currentUser.bio;
-    document.getElementById('profile-picture-preview').src = currentUser.avatar;
+    document.getElementById('username').value = currentUser.username;
+    document.getElementById('email').value = currentUser.email;
+    document.getElementById('bio').value = currentUser.bio;
+    document.getElementById('profile-pic-display').src = currentUser.avatar || 'https://via.placeholder.com/100';
 
     const postCount = JSON.parse(localStorage.getItem('posts') || '[]').filter(p => p.userId === currentUser.id).length;
-    document.getElementById('post-count').textContent = postCount;
+    currentUser.posts = postCount;
+    currentUser.followers = currentUser.followers || [];
+    currentUser.following = currentUser.following || [];
+    document.getElementById('posts-count').textContent = currentUser.posts;
     document.getElementById('followers-count').textContent = currentUser.followers.length;
     document.getElementById('following-count').textContent = currentUser.following.length;
 
-    const profilePictureInput = document.getElementById('profile-picture');
-    if (profilePictureInput) {
-        profilePictureInput.onchange = (event) => {
+    const profilePicInput = document.getElementById('profile-pic');
+    if (profilePicInput) {
+        profilePicInput.onchange = (event) => {
             const file = event.target.files[0];
             console.log('Arquivo selecionado:', file);
             if (file) {
@@ -524,7 +524,15 @@ function loadProfile() {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     console.log('Imagem carregada:', e.target.result.substring(0, 50));
-                    document.getElementById('profile-picture-preview').src = e.target.result;
+                    currentUser.avatar = e.target.result;
+                    document.getElementById('profile-pic-display').src = currentUser.avatar;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userIndex = storedUsers.findIndex(u => u.id === currentUser.id);
+                    if (userIndex !== -1) {
+                        storedUsers[userIndex].avatar = currentUser.avatar;
+                        localStorage.setItem('users', JSON.stringify(storedUsers));
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -639,6 +647,55 @@ function updateProfile() {
     window.location.href = 'profile.html';
 }
 
+function saveProfileChanges() {
+    const username = $('#username').val();
+    const email = $('#email').val();
+    const bio = $('#bio').val();
+    const newPassword = $('#new-password').val();
+
+    if (!username || !email || !bio) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    if (bio.length > 160) {
+        alert('A bio deve ter no máximo 160 caracteres!');
+        return;
+    }
+
+    if (!validateEmailFormat(email)) {
+        alert('Formato de email inválido!');
+        return;
+    }
+
+    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = storedUsers.find(u => (u.email === email && u.id !== currentUser.id));
+    if (existingUser) {
+        alert('Email já cadastrado por outro usuário!');
+        return;
+    }
+
+    const updatedUser = {
+        ...currentUser,
+        username: username,
+        email: email,
+        bio: bio,
+        password: newPassword || currentUser.password
+    };
+
+    const updatedUsers = storedUsers.map(u => u.id === currentUser.id ? updatedUser : u);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    currentUser = updatedUser;
+
+    const storedPosts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const updatedPosts = storedPosts.map(p => p.userId === currentUser.id ? { ...p, username: username } : p);
+    localStorage.setItem('posts', JSON.stringify(updatedPosts));
+
+    console.log('Perfil atualizado:', updatedUser);
+    alert('Perfil atualizado com sucesso!');
+}
+
 function handleNavClick(event, target) {
     event.preventDefault();
     const overlay = document.getElementById('stripe-overlay');
@@ -690,6 +747,13 @@ function checkLogin() {
     console.log('Verificação de login concluída. Usuário atual:', currentUser ? currentUser.username : 'Nenhum');
 }
 
+document.getElementById('menu-toggle').addEventListener('click', () => {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    sidebar.classList.toggle('active');
+    mainContent.classList.toggle('active');
+});
+
 window.addEventListener('hashchange', () => {
     const hash = window.location.hash;
     if (hash === '#profiles') {
@@ -730,6 +794,34 @@ window.addEventListener('load', () => {
     } else if (window.location.pathname.includes('verify.html')) {
         // Não carrega nada adicional em verify.html
     }
-    updateUserStatus(); // Garante que o status seja atualizado
+    updateUserStatus();
     console.log('Página carregada:', window.location.pathname);
+
+    // Fundo animado com partículas
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles';
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = Math.random() * 100 + 'vh';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particlesContainer.appendChild(particle);
+    }
+    document.body.appendChild(particlesContainer);
+
+    // Bolinha que segue o cursor
+    const cursorDot = document.createElement('div');
+    cursorDot.className = 'cursor-dot';
+    document.body.appendChild(cursorDot);
+
+    document.addEventListener('mousemove', (e) => {
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+        cursorDot.classList.add('active');
+    });
+
+    document.addEventListener('mouseleave', () => {
+        cursorDot.classList.remove('active');
+    });
 });

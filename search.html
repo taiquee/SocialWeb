@@ -3,36 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Busca de Perfis</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Connecta - Busca</title>
+    <link rel="stylesheet" href="styles.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
-            <h1>IFES Connect</h1>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-bars" id="menu-toggle"></i>
+            <img src="images/connectalogo.png" alt="Connecta Logo" class="sidebar-logo">
         </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Início</a></li>
-                <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')">Criar Post</a></li>
-                <li><a href="logout" onclick="handleNavClick(event, 'logout')">Sair</a></li>
-            </ul>
-        </nav>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <div id="user-status"></div>
-    </header>
-    <main>
-        <section id="search-results" class="search-results">
-            <h2>Resultados da Busca</h2>
-        </section>
-    </main>
-    <div id="stripe-overlay"></div>
+        <ul id="nav-links">
+            <li><a href="index.html" onclick="handleNavClick(event, 'index.html')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')"><i class="fas fa-plus"></i> Criar Post</a></li>
+            <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li><a href="users.html" onclick="handleNavClick(event, 'users.html')"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="chat.html" onclick="handleNavClick(event, 'chat.html')"><i class="fas fa-comment"></i> Chat</a></li>
+            <li><a href="#" onclick="handleNavClick(event, 'logout')"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header>
+            <div class="logo-container">
+                <img src="images/connectalogo.png" alt="Connecta Logo">
+                <span>Connecta</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="user-status"></div>
+        </header>
+        <main>
+            <div class="auth-container" id="search-results-container">
+                <h2>Resultados da Busca</h2>
+                <div id="search-results" class="profile-grid">
+                    <p>Busque um perfil para ser apresentado aqui!</p>
+                </div>
+            </div>
+        </main>
+        <div id="stripe-overlay"></div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput.value.trim()) {
+                loadSearchResults(); // Exibe a mensagem inicial
+            }
+        });
+
+        function loadSearchResults() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const searchResults = document.getElementById('search-results');
+            searchResults.innerHTML = ''; // Limpa resultados anteriores
+
+            if (!searchInput.trim()) {
+                searchResults.innerHTML = '<p>Busque um perfil para ser apresentado aqui!</p>';
+                return;
+            }
+
+            const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            const filteredUsers = storedUsers.filter(user =>
+                user.username.toLowerCase().includes(searchInput) ||
+                (user.displayName && user.displayName.toLowerCase().includes(searchInput))
+            );
+
+            if (filteredUsers.length > 0) {
+                filteredUsers.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.classList.add('profile-card');
+                    userCard.innerHTML = `
+                        <img src="${user.avatar || 'https://via.placeholder.com/100'}" alt="${user.username}" class="user-avatar">
+                        <h3>${user.displayName || user.username}</h3>
+                        <p>@${user.username}</p>
+                        <button class="follow-btn" onclick="openChat('${user.id}', '${user.avatar || 'https://via.placeholder.com/100'}', '${user.displayName || user.username}')">Enviar Mensagem</button>
+                    `;
+                    searchResults.appendChild(userCard);
+                });
+            } else {
+                searchResults.innerHTML = '<p>Nenhum usuário encontrado.</p>';
+            }
+        }
+
+        function searchProfiles() {
+            loadSearchResults();
+        }
+
+        window.openChat = (userId, avatar, name) => {
+            window.location.href = 'chat.html?user=' + userId;
+        };
+    </script>
 </body>
 </html>

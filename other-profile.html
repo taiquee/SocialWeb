@@ -3,69 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFES Connect - Perfil</title>
-    <link rel="stylesheet" href="styles.css?v=3">
+    <title>IFES Connect - Perfil de Outro Usuário</title>
+    <link rel="stylesheet" href="styles.css?v=9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .profile-section {
-            text-align: center;
-        }
-        .counters p {
-            margin: 5px 0;
-            font-weight: bold;
-        }
-        .follow-btn {
-            margin: 5px;
-            padding: 10px 20px;
-            background-color: #005555;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .follow-btn:hover {
-            background-color: #003087;
-        }
-    </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/ifeslogo.png" alt="IFES Connect Logo">
-            <h1>IFES Connect</h1>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-bars" id="menu-toggle"></i>
+            <img src="images/connectalogo.png" alt="Connecta Logo" class="sidebar-logo">
         </div>
-        <nav>
-            <ul id="nav-links">
-                <li><a href="index.html" onclick="handleNavClick(event, 'index.html')">Home</a></li>
-                <li><a href="login.html" onclick="handleNavClick(event, 'login.html')">Login</a></li>
-            </ul>
-        </nav>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuario" onkeypress="if(event.key === 'Enter') searchProfiles()">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <div id="user-status"></div>
-    </header>
-    <main>
-        <div class="auth-container" id="other-profile-container">
-            <h2 id="profile-title"></h2>
-            <div class="profile-section">
-                <img id="profile-picture-preview" src="" alt="Foto de Perfil" style="width: 100px; height: 100px; border-radius: 50%;">
-                <h3 id="profile-username"></h3>
-                <p id="profile-bio"></p>
-                <div class="counters">
-                    <p>Posts: <span id="post-count"></span></p>
-                    <p>Seguidores: <span id="followers-count"></span></p>
-                    <p>Seguindo: <span id="following-count"></span></p>
-                </div>
-                <button id="follow-btn" class="follow-btn">Seguir</button>
-                <button id="message-btn" class="follow-btn">Enviar Mensagem</button>
+        <ul id="nav-links">
+            <li><a href="index.html" onclick="handleNavClick(event, 'index.html')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="create-post.html" onclick="handleNavClick(event, 'create-post.html')"><i class="fas fa-plus"></i> Criar Post</a></li>
+            <li><a href="profile.html" onclick="handleNavClick(event, 'profile.html')"><i class="fas fa-user"></i> Meu Perfil</a></li>
+            <li><a href="users.html" onclick="handleNavClick(event, 'users.html')"><i class="fas fa-users"></i> Usuários</a></li>
+            <li><a href="chat.html" onclick="handleNavClick(event, 'chat.html')"><i class="fas fa-comment"></i> Chat</a></li>
+            <li><a href="#" onclick="handleNavClick(event, 'logout')"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header>
+            <div class="logo-container">
+                <img src="images/connectalogo.png" alt="Connecta Logo">
+                <span>Connecta</span>
             </div>
-            <div id="posts"></div>
-        </div>
-    </main>
-    <div id="stripe-overlay"></div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar @usuário" onkeypress="if(event.key === 'Enter') searchProfiles()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div id="user-status"></div>
+        </header>
+        <main>
+            <div class="auth-container" id="profile-container">
+                <h2 id="profile-title"></h2>
+                <div class="profile-header">
+                    <img src="" alt="Foto de Perfil" id="profile-picture-preview" class="user-avatar">
+                    <h3 id="profile-username"></h3>
+                    <div class="stats-container">
+                        <p class="stat-item"><strong>Posts:</strong> <span id="post-count">0</span></p>
+                        <p class="stat-item"><strong>Seguidores:</strong> <span id="followers-count">0</span></p>
+                        <p class="stat-item"><strong>Seguindo:</strong> <span id="following-count">0</span></p>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <p><strong>Bio:</strong> <span id="profile-bio"></span></p>
+                    ${currentUser ? `
+                        <button id="follow-btn" class="follow-btn">Seguir</button>
+                        <button id="message-btn" class="profile-btn" onclick="sendMessage(getUserIdFromUrl())">Enviar Mensagem</button>
+                    ` : ''}
+                </div>
+                <div id="posts"></div>
+            </div>
+        </main>
+        <div id="stripe-overlay"></div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        function getUserIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('userId');
+        }
+
+        window.addEventListener('load', () => {
+            const userId = getUserIdFromUrl();
+            if (userId) {
+                loadOtherProfile(userId);
+            } else {
+                console.error('Nenhum userId encontrado na URL');
+                window.location.href = 'index.html';
+            }
+            updateUserStatus();
+        });
+    </script>
 </body>
 </html>
